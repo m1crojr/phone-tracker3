@@ -305,7 +305,7 @@ function startMonitor(){
     document.getElementById('accText').textContent=`GPS accuracy ±${ri(8,15)} m`;
     document.getElementById('cAcc').textContent=`±${ri(8,15)} m`;
     hideZC();map.dragging.enable();map.scrollWheelZoom.enable();
-    setStat('dot-blue','Monitoring');
+    setStat('dot-blue','Active');
     document.getElementById('iMSISDN').textContent=phone;
     document.getElementById('iCarrier').textContent=carrier.name;
     document.getElementById('iNetwork').textContent=network;
