@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TeleSurv Pro — History</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg0:#07090f;--bg1:#0c0f1a;--bg3:#181e2e;--border:#1e2740;--border2:#263050;--accent:#2f7fff;--accent2:#1a5fd4;--accent-g:rgba(47,127,255,0.12);--amber:#e8a020;--red:#e03c3c;--green:#22c55e;--text0:#f0f4ff;--text1:#9aaac8;--text2:#4f6082;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg0);color:var(--text0);font-family:var(--sans);font-size:13px;display:flex;flex-direction:column;}
+.topbar{height:48px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:20px;flex-shrink:0;z-index:100;}
+.topbar-brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:28px;height:28px;background:var(--accent2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.brand-name{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text0);letter-spacing:0.06em;}
+.brand-ver{font-family:var(--mono);font-size:9px;color:var(--text2);margin-top:1px;letter-spacing:0.08em;}
+.topbar-sep{width:1px;height:28px;background:var(--border);margin:0 4px;}
+.nav-tabs{display:flex;gap:2px;}
+.nav-tab{padding:5px 14px;font-size:11px;color:var(--text2);border-radius:3px;cursor:pointer;letter-spacing:0.04em;transition:all 0.15s;font-family:var(--sans);border:1px solid transparent;text-decoration:none;}
+.nav-tab:hover{background:var(--bg3);color:var(--text1);}
+.nav-tab.active{background:var(--accent-g);color:var(--accent);border-color:rgba(47,127,255,0.2);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:16px;}
+.sys-badge{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--text2);}
+.sys-badge .dot{width:6px;height:6px;border-radius:50%;}
+.dot-green{background:var(--green);box-shadow:0 0 6px var(--green);}
+.dot-amber{background:var(--amber);box-shadow:0 0 6px var(--amber);}
+.dot-blue{background:var(--accent);box-shadow:0 0 6px var(--accent);}
+#globalClock{font-family:var(--mono);font-size:11px;color:var(--text1);}
+.workspace{flex:1;display:flex;overflow:hidden;}
+.sidebar{width:272px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sb-section{border-bottom:1px solid var(--border);padding:14px 16px;flex-shrink:0;}
+.sb-head{font-family:var(--mono);font-size:9px;color:var(--text2);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.sb-head::after{content:'';flex:1;height:1px;background:var(--border);}
+.field-label{font-size:10px;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;}
+.input-row{display:flex;gap:8px;margin-bottom:10px;}
+input[type=text]{flex:1;background:var(--bg0);border:1px solid var(--border2);color:var(--text0);font-family:var(--mono);font-size:12px;padding:8px 10px;border-radius:3px;outline:none;transition:border-color 0.15s,box-shadow 0.15s;letter-spacing:0.05em;}
+input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,127,255,0.15);}
+input[type=text]::placeholder{color:var(--text2);}
+.btn-primary{background:var(--accent2);color:#fff;border:none;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.1em;padding:8px 14px;cursor:pointer;white-space:nowrap;transition:background 0.15s,box-shadow 0.15s;}
+.btn-primary:hover{background:var(--accent);box-shadow:0 2px 12px rgba(47,127,255,0.3);}
+.btn-primary:disabled{background:var(--bg3);color:var(--text2);cursor:not-allowed;box-shadow:none;}
+.btn-danger{width:100%;background:transparent;border:1px solid var(--border2);color:var(--text1);border-radius:3px;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;padding:7px;cursor:pointer;display:none;margin-top:6px;transition:all 0.15s;}
+.btn-danger:hover{border-color:var(--red);color:var(--red);}
+.kv{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(30,39,64,0.6);gap:8px;}
+.kv:last-child{border-bottom:none;}
+.kv-k{font-size:10px;color:var(--text2);letter-spacing:0.06em;white-space:nowrap;flex-shrink:0;}
+.kv-v{font-family:var(--mono);font-size:11px;color:var(--text1);text-align:right;word-break:break-all;}
+.kv-v.hi{color:var(--text0);}.kv-v.blue{color:var(--accent);}
+.signal-bars{display:flex;align-items:flex-end;gap:2px;height:14px;}
+.bar{width:4px;border-radius:1px;background:var(--border2);}
+.bar.on{background:var(--green);}
+.coord-block{background:var(--bg0);border:1px solid var(--border);border-radius:4px;padding:10px 12px;margin-top:4px;}
+.coord-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.coord-row:last-child{margin-bottom:0;}
+.coord-tag{font-size:9px;color:var(--text2);letter-spacing:0.12em;}
+.coord-val{font-family:var(--mono);font-size:12px;color:var(--accent);}
+.log-wrap{flex:1;overflow-y:auto;padding:10px 16px;min-height:0;}
+.log-wrap::-webkit-scrollbar{width:3px;}
+.log-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.log-entry{display:flex;gap:8px;font-family:var(--mono);font-size:10px;line-height:1.6;margin-bottom:2px;opacity:0;animation:fadeUp 0.25s forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.lt{color:var(--text2);flex-shrink:0;}
+.lm.ok{color:var(--green);}.lm.warn{color:var(--amber);}.lm.err{color:var(--red);}.lm.info{color:var(--text2);}.lm.data{color:var(--text1);}
+.map-col{flex:1;position:relative;overflow:hidden;}
+#map{width:100%;height:100%;}
+.leaflet-tile{filter:brightness(0.22) saturate(0.3) hue-rotate(200deg);}
+.leaflet-container{background:#07090f;}
+.leaflet-control-scale-line{background:rgba(7,9,15,0.7);border-color:var(--border2);color:var(--text2);font-family:var(--mono);font-size:9px;}
+.lock-flash{position:absolute;inset:0;background:rgba(47,127,255,0.06);opacity:0;pointer-events:none;}
+.lock-flash.flash{animation:flashIn 0.5s ease forwards;}
+@keyframes flashIn{0%{opacity:0;}30%{opacity:1;}100%{opacity:0;}}
+.alert-stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-70px);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.2em;color:var(--red);background:rgba(7,9,15,0.9);border:1px solid var(--red);padding:4px 12px;border-radius:2px;opacity:0;pointer-events:none;transition:opacity 0.4s;z-index:460;}
+.alert-stamp.show{opacity:1;}
+.map-chip{position:absolute;top:12px;left:12px;z-index:500;background:rgba(7,9,15,0.88);border:1px solid var(--border2);border-radius:4px;padding:8px 12px;font-family:var(--mono);font-size:10px;color:var(--text1);display:none;backdrop-filter:blur(6px);line-height:1.8;min-width:210px;}
+.map-chip.show{display:block;}
+.chip-title{font-size:9px;color:var(--text2);letter-spacing:0.14em;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.chip-row{display:flex;justify-content:space-between;gap:16px;}
+.chip-row span:last-child{color:var(--text0);}
+.acc-chip{position:absolute;bottom:28px;left:12px;z-index:500;background:rgba(7,9,15,0.85);border:1px solid var(--border2);border-radius:4px;padding:6px 12px;font-family:var(--mono);font-size:10px;color:var(--text2);display:none;backdrop-filter:blur(4px);}
+.acc-chip.show{display:flex;gap:10px;align-items:center;}
+.adot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.unk-chip{position:absolute;top:12px;right:12px;z-index:500;background:rgba(7,9,15,0.92);border:1px solid rgba(224,60,60,0.4);border-radius:4px;padding:8px 12px;font-family:var(--mono);font-size:10px;color:var(--text1);display:none;backdrop-filter:blur(6px);line-height:1.8;min-width:190px;}
+.unk-chip.show{display:block;}
+.zoom-chip{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:500;background:rgba(7,9,15,0.9);border:1px solid var(--border2);border-radius:3px;padding:5px 16px;font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:0.12em;opacity:0;transition:opacity 0.4s;pointer-events:none;white-space:nowrap;}
+.zoom-chip.show{opacity:1;}
+.panel-right{width:240px;flex-shrink:0;background:var(--bg1);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.pr-section{border-bottom:1px solid var(--border);padding:12px 14px;flex-shrink:0;}
+.timeline{padding:6px 0;}
+.tl-item{display:flex;gap:10px;font-size:10px;margin-bottom:8px;}
+.tl-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;margin-top:3px;border:1px solid var(--border2);}
+.tl-dot.active{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent);}
+.tl-dot.done{background:var(--green);border-color:var(--green);}
+.tl-dot.alert{background:var(--red);border-color:var(--red);box-shadow:0 0 6px var(--red);}
+.tl-text{color:var(--text2);}
+.tl-text span{color:var(--text1);display:block;}
+.tower-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(30,39,64,0.5);font-size:10px;}
+.tower-item:last-child{border-bottom:none;}
+.tower-icon{font-size:12px;flex-shrink:0;}
+.tower-name{color:var(--text1);font-family:var(--mono);}
+.tower-dist{margin-left:auto;color:var(--text2);font-family:var(--mono);font-size:9px;}
+.tower-bar{width:30px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.tower-fill{height:100%;background:var(--accent);border-radius:2px;}
+.waveform{width:100%;height:40px;margin-top:8px;opacity:0.6;}
+.threat-box{background:rgba(224,60,60,0.05);border:1px solid rgba(224,60,60,0.2);border-radius:4px;padding:8px 10px;margin-top:8px;display:none;}
+.threat-box.show{display:block;}
+.threat-head{font-family:var(--mono);font-size:9px;color:var(--red);letter-spacing:0.14em;margin-bottom:6px;}
+.threat-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;padding:3px 0;border-bottom:1px solid rgba(224,60,60,0.1);}
+.threat-row:last-child{border-bottom:none;}
+.threat-k{color:var(--text2);font-size:9px;}
+.threat-v{color:var(--red);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-icon">📡</div>
+    <div><div class="brand-name">TeleSurv Pro</div><div class="brand-ver">Signal Intelligence Platform v4.2.1</div></div>
+  </div>
+  <div class="topbar-sep"></div>
+  <div class="nav-tabs">
+    <a class="nav-tab active" href="scenario1.html">Location Trace</a>
+    <a class="nav-tab" href="scenario2.html">Cell Analysis</a>
+    <a class="nav-tab" href="scenario3.html">History</a>
+    <div class="nav-tab">Reports</div>
+  </div>
+  <div class="topbar-right">
+    <div class="sys-badge"><div class="dot dot-green"></div>DB Connected</div>
+    <div class="sys-badge"><div class="dot dot-blue" id="sysStatDot"></div><span id="sysStatLbl">Idle</span></div>
+    <div class="topbar-sep"></div>
+    <div id="globalClock">--:--:--</div>
+  </div>
+</div>
+<div class="workspace">
+  <div class="sidebar">
+    <div class="sb-section">
+      <div class="sb-head">Query</div>
+      <div class="field-label">MSISDN / Phone Number</div>
+      <div class="input-row">
+        <input type="text" id="phoneIn" placeholder="+91 XXXXXXXXXX" maxlength="15"/>
+        <button class="btn-primary" id="btnStart" onclick="startMonitor()">MONITOR</button>
+      </div>
+      <button class="btn-danger" id="btnStop" onclick="stopMonitor()">■ &nbsp;END SESSION</button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-head">Signal Intelligence</div>
+      <div class="kv"><span class="kv-k">MSISDN</span><span class="kv-v hi" id="iMSISDN">—</span></div>
+      <div class="kv"><span class="kv-k">Carrier</span><span class="kv-v blue" id="iCarrier">—</span></div>
+      <div class="kv"><span class="kv-k">Network</span><span class="kv-v" id="iNetwork">—</span></div>
+      <div class="kv"><span class="kv-k">IMSI</span><span class="kv-v" id="iIMSI">—</span></div>
+      <div class="kv"><span class="kv-k">MCC-MNC</span><span class="kv-v" id="iMCC">—</span></div>
+      <div class="kv"><span class="kv-k">Signal</span>
+        <div class="signal-bars" id="sigBars">
+          <div class="bar" style="height:4px"></div><div class="bar" style="height:7px"></div>
+          <div class="bar" style="height:10px"></div><div class="bar" style="height:13px"></div>
+          <div class="bar" style="height:16px"></div>
+        </div>
+      </div>
+      <div class="kv"><span class="kv-k">Last Ping</span><span class="kv-v" id="iLastPing">—</span></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-head">Coordinates</div>
+      <div class="coord-block">
+        <div class="coord-row"><span class="coord-tag">LATITUDE</span><span class="coord-val" id="cLat">—</span></div>
+        <div class="coord-row"><span class="coord-tag">LONGITUDE</span><span class="coord-val" id="cLng">—</span></div>
+        <div class="coord-row" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">
+          <span class="coord-tag">ACCURACY</span><span class="coord-val" id="cAcc" style="color:var(--amber);">—</span>
+        </div>
+        <div class="coord-row"><span class="coord-tag">LOCATION</span><span class="coord-val" id="cLoc" style="color:var(--text1);font-size:10px;">—</span></div>
+      </div>
+    </div>
+    <div class="log-wrap" id="logBox">
+      <div class="log-entry"><span class="lt">—</span><span class="lm info">Platform ready. Awaiting query.</span></div>
+    </div>
+  </div>
+
+  <div class="map-col">
+    <div id="map"></div>
+    <div class="lock-flash" id="lockFlash"></div>
+    <div class="alert-stamp" id="alertStamp">⚠ &nbsp;UNKNOWN SIGNAL APPROACHING</div>
+    <div class="map-chip" id="mapChip">
+      <div class="chip-title" id="chipTitle">SELF MONITORING — ACTIVE</div>
+      <div class="chip-row"><span>Tower</span><span id="chTower">—</span></div>
+      <div class="chip-row"><span>LAC</span><span id="chLAC">—</span></div>
+      <div class="chip-row"><span>Cell ID</span><span id="chCell">—</span></div>
+      <div class="chip-row"><span>Ping</span><span id="chPing">—</span></div>
+      <div class="chip-row"><span>Updated</span><span id="chTime">—</span></div>
+    </div>
+    <div class="acc-chip" id="accChip"><div class="adot"></div><span id="accText">GPS accuracy ±— m</span></div>
+    <div class="unk-chip" id="unkChip">
+      <div class="chip-title" style="color:var(--red);letter-spacing:0.14em;">UNIDENTIFIED SIGNAL</div>
+      <div class="chip-row"><span>Freq</span><span id="unkFreq">—</span></div>
+      <div class="chip-row"><span>Power</span><span id="unkPower">—</span></div>
+      <div class="chip-row"><span>Distance</span><span id="unkDist">—</span></div>
+      <div class="chip-row"><span>Closing</span><span id="unkClosing" style="color:var(--red);">—</span></div>
+    </div>
+    <div class="zoom-chip" id="zoomChip"></div>
+  </div>
+
+  <div class="panel-right">
+    <div class="pr-section">
+      <div class="sb-head">Trace Pipeline</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot" id="tl1"></div><div class="tl-text">Self Lock<span id="tl1s">Pending</span></div></div>
+        <div class="tl-item"><div class="tl-dot" id="tl2"></div><div class="tl-text">RF Scan Active<span id="tl2s">Pending</span></div></div>
+        <div class="tl-item"><div class="tl-dot" id="tl3"></div><div class="tl-text">Signal Detected<span id="tl3s">Pending</span></div></div>
+        <div class="tl-item"><div class="tl-dot" id="tl4"></div><div class="tl-text">Approach Vector<span id="tl4s">Pending</span></div></div>
+        <div class="tl-item"><div class="tl-dot" id="tl5"></div><div class="tl-text">Proximity Alert<span id="tl5s">Pending</span></div></div>
+      </div>
+      <div class="threat-box" id="threatBox">
+        <div class="threat-head">⚠ UNKNOWN SIGNAL DETECTED</div>
+        <div class="threat-row"><span class="threat-k">DEVICE ID</span><span class="threat-v" id="tDevID">—</span></div>
+        <div class="threat-row"><span class="threat-k">PROTOCOL</span><span class="threat-v" id="tProto">—</span></div>
+        <div class="threat-row"><span class="threat-k">DISTANCE</span><span class="threat-v" id="tDist">—</span></div>
+        <div class="threat-row"><span class="threat-k">BEARING</span><span class="threat-v" id="tBearing">—</span></div>
+        <div class="threat-row"><span class="threat-k">STATUS</span><span class="threat-v" id="tStatus">Approaching</span></div>
+      </div>
+    </div>
+    <div class="pr-section">
+      <div class="sb-head">Nearby Towers</div>
+      <div id="towerList"><div style="font-size:10px;color:var(--text2);font-family:var(--mono);">No data</div></div>
+    </div>
+    <div class="pr-section" style="flex:1;overflow:hidden;">
+      <div class="sb-head">Signal Strength</div>
+      <svg class="waveform" viewBox="0 0 200 40" preserveAspectRatio="none">
+        <polyline id="wfLine" points="0,20 200,20" fill="none" stroke="#1e2740" stroke-width="1.5"/>
+      </svg>
+      <div style="margin-top:8px;">
+        <div class="kv"><span class="kv-k">RSSI</span><span class="kv-v" id="rssiVal">—</span></div>
+        <div class="kv"><span class="kv-k">RSRP</span><span class="kv-v" id="rsrpVal">—</span></div>
+        <div class="kv"><span class="kv-k">SINR</span><span class="kv-v" id="sinrVal">—</span></div>
+        <div class="kv"><span class="kv-k">Handovers</span><span class="kv-v" id="hoVal">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PIN=[24.558285061112866,81.29632322527857];
+const UNK_START=[24.564,81.304];
+const CARRIERS=[{name:'Jio Infocomm',mcc:'404-73'},{name:'Airtel',mcc:'404-10'},{name:'Vi (Vodafone)',mcc:'404-20'},{name:'BSNL',mcc:'404-07'}];
+const NETWORKS=['4G LTE','5G NR SA','5G NSA','4G VoLTE','4G+'];
+const TOWERS=['RWA-BTS-04-N','RWA-BTS-11-S','RWA-BTS-07-E','RWA-BTS-02-C','RWA-BTS-09-W','RWA-BTS-15-NE'];
+const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const now=()=>new Date().toLocaleTimeString('en-GB');
+const haversine=(a,b)=>{const R=6371000,dLat=(b[0]-a[0])*Math.PI/180,dLng=(b[1]-a[1])*Math.PI/180,x=Math.sin(dLat/2)**2+Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));};
+let map,myMarker,myCircle,unkMarker,unkCircle,rfInterval,unkInterval,wfPts=[],wfHandovers=0;
+
+setInterval(()=>document.getElementById('globalClock').textContent=now(),1000);
+
+window.addEventListener('DOMContentLoaded',()=>{
+  map=L.map('map',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,dragging:false,zoomAnimation:true}).setView([22.5,80.9],5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:''}).addTo(map);
+  L.control.scale({imperial:false,metric:true}).addTo(map);
+  document.getElementById('phoneIn').addEventListener('keydown',e=>{if(e.key==='Enter') startMonitor();});
+});
+
+function log(msg,type='info'){const box=document.getElementById('logBox');const el=document.createElement('div');el.className='log-entry';el.innerHTML=`<span class="lt">${now()}</span><span class="lm ${type}">${msg}</span>`;box.appendChild(el);box.scrollTop=box.scrollHeight;}
+function setStat(dot,lbl){document.getElementById('sysStatDot').className=`dot ${dot}`;document.getElementById('sysStatLbl').textContent=lbl;}
+function showZC(t){const c=document.getElementById('zoomChip');c.textContent=t;c.classList.add('show');}
+function hideZC(){document.getElementById('zoomChip').classList.remove('show');}
+function tlSet(n,state,text){const cls=state==='active'?' active':state==='done'?' done':state==='alert'?' alert':'';document.getElementById(`tl${n}`).className='tl-dot'+cls;document.getElementById(`tl${n}s`).textContent=text;}
+function tlReset(){for(let i=1;i<=5;i++)tlSet(i,'','Pending');}
+function updateBars(pct){const bars=document.querySelectorAll('#sigBars .bar');const n=Math.round((pct/100)*5);bars.forEach((b,i)=>b.classList.toggle('on',i<n));}
+function pushWf(y,stroke='#2f7fff'){wfPts.push(y);if(wfPts.length>40)wfPts.shift();document.getElementById('wfLine').setAttribute('points',wfPts.map((p,i)=>`${i*5},${p}`).join(' '));document.getElementById('wfLine').setAttribute('stroke',stroke);}
+function renderTowers(){const list=document.getElementById('towerList');list.innerHTML='';[...TOWERS].sort(()=>Math.random()-0.5).slice(0,4).forEach((t,i)=>{const dist=(Math.random()*1.2+0.15).toFixed(2),pct=Math.max(15,100-i*20-ri(0,14));list.innerHTML+=`<div class="tower-item"><div class="tower-icon">📶</div><div><div class="tower-name">${t}</div><div class="tower-bar"><div class="tower-fill" style="width:${pct}%"></div></div></div><div class="tower-dist">${dist} km</div></div>`;});}
+
+function blueIcon(){return L.divIcon({className:'',html:`<div style="position:relative;width:20px;height:20px;"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#2f7fff;border:2.5px solid #fff;animation:mP 2s infinite;"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(47,127,255,0.35);animation:mR 2s infinite;"></div></div><style>@keyframes mP{0%,100%{box-shadow:0 0 0 0 rgba(47,127,255,0.5);}50%{box-shadow:0 0 0 10px rgba(47,127,255,0);}}@keyframes mR{0%{transform:translate(-50%,-50%) scale(0.5);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.8);opacity:0;}}</style>`,iconSize:[20,20],iconAnchor:[10,10]});}
+function redIcon(){return L.divIcon({className:'',html:`<div style="position:relative;width:18px;height:18px;"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#e03c3c;border:2px solid #fff;animation:rP 1.2s infinite;"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(224,60,60,0.4);animation:rR 1.2s infinite;"></div></div><style>@keyframes rP{0%,100%{box-shadow:0 0 0 0 rgba(224,60,60,0.6);}50%{box-shadow:0 0 0 10px rgba(224,60,60,0);}}@keyframes rR{0%{transform:translate(-50%,-50%) scale(0.4);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.8);opacity:0;}}</style>`,iconSize:[18,18],iconAnchor:[9,9]});}
+
+function rfTick(){
+  const base=ri(-75,-50),sig=Math.min(100,Math.max(0,100+base));
+  pushWf(40-(sig/100)*34);
+  document.getElementById('rssiVal').textContent=`${base} dBm`;
+  document.getElementById('rsrpVal').textContent=`${ri(-115,-85)} dBm`;
+  document.getElementById('sinrVal').textContent=`${ri(5,25)} dB`;
+  updateBars(sig);
+}
+
+function startMonitor(){
+  const phone=document.getElementById('phoneIn').value.trim();
+  if(!phone){log('ERROR: No MSISDN provided.','err');return;}
+  wfPts=[];wfHandovers=0;
+  const carrier=CARRIERS[ri(0,3)],network=NETWORKS[ri(0,4)];
+  const imsi=Array.from({length:15},()=>ri(0,9)).join('');
+  document.getElementById('btnStart').disabled=true;
+  document.getElementById('btnStop').style.display='block';
+  setStat('dot-amber','Initialising...');tlReset();
+  log(`Proximity monitor activated — ${phone}`,'warn');
+
+  map.setView([22.5,80.9],5,{animate:false});
+  map.dragging.disable();map.scrollWheelZoom.disable();
+  showZC('Acquiring self location...');
+  tlSet(1,'active','Locking...');
+  setTimeout(()=>map.flyTo(PIN,15,{animate:true,duration:2.8,easeLinearity:0.2}),600);
+
+  setTimeout(()=>{
+    tlSet(1,'done','Self locked');tlSet(2,'active','Scanning RF...');
+    myMarker=L.marker(PIN,{icon:blueIcon()}).addTo(map);
+    myCircle=L.circle(PIN,{radius:ri(10,20),color:'#2f7fff',fillColor:'#2f7fff',fillOpacity:0.07,weight:1,dashArray:'3 4'}).addTo(map);
+    document.getElementById('mapChip').classList.add('show');
+    document.getElementById('accChip').classList.add('show');
+    document.getElementById('accText').textContent=`GPS accuracy ±${ri(8,15)} m`;
+    document.getElementById('cAcc').textContent=`±${ri(8,15)} m`;
+    hideZC();map.dragging.enable();map.scrollWheelZoom.enable();
+    setStat('dot-blue','Monitoring');
+    document.getElementById('iMSISDN').textContent=phone;
+    document.getElementById('iCarrier').textContent=carrier.name;
+    document.getElementById('iNetwork').textContent=network;
+    document.getElementById('iIMSI').textContent=imsi;
+    document.getElementById('iMCC').textContent=carrier.mcc;
+    document.getElementById('cLat').textContent=PIN[0].toFixed(8);
+    document.getElementById('cLng').textContent=PIN[1].toFixed(8);
+    document.getElementById('cLoc').textContent='Rewa, Madhya Pradesh';
+    renderTowers();
+    log('Self position locked. RF scanning active.','ok');
+    tlSet(2,'done','RF scan active');
+    rfInterval=setInterval(rfTick,1200);
+  },3800);
+
+  // Unknown signal appears after 6s
+  setTimeout(()=>{
+    clearInterval(rfInterval);rfInterval=null;
+    tlSet(3,'done','Signal detected');tlSet(4,'active','Tracking vector...');
+
+    document.getElementById('threatBox').classList.add('show');
+    const devID=`UNK-${ri(100,999)}-${String.fromCharCode(ri(65,90))}`;
+    const proto=['ISM 2.4GHz','433 MHz RF','ISM 5.8GHz'][ri(0,2)];
+    document.getElementById('tDevID').textContent=devID;
+    document.getElementById('tProto').textContent=proto;
+    document.getElementById('tStatus').textContent='Approaching';
+
+    // Spike waveform red
+    for(let i=0;i<8;i++){wfPts.push(ri(2,10));if(wfPts.length>40)wfPts.shift();}
+    document.getElementById('wfLine').setAttribute('points',wfPts.map((p,i)=>`${i*5},${p}`).join(' '));
+    document.getElementById('wfLine').setAttribute('stroke','#e03c3c');
+    document.getElementById('rssiVal').textContent=`${ri(-45,-30)} dBm`;
+
+    document.getElementById('alertStamp').classList.add('show');
+    setTimeout(()=>document.getElementById('alertStamp').classList.remove('show'),3000);
+
+    unkMarker=L.marker(UNK_START,{icon:redIcon()}).addTo(map);
+    unkCircle=L.circle(UNK_START,{radius:30,color:'#e03c3c',fillColor:'#e03c3c',fillOpacity:0.08,weight:1,dashArray:'3 4'}).addTo(map);
+    document.getElementById('unkChip').classList.add('show');
+    map.flyTo([(PIN[0]+UNK_START[0])/2,(PIN[1]+UNK_START[1])/2],14,{animate:true,duration:1.5});
+    log(`Unknown signal detected: ${devID}`,'err');
+    log(`Protocol: ${proto} · Approaching bearing 220°`,'warn');
+    tlSet(4,'done','Approach confirmed');tlSet(5,'active','Alert active');
+
+    const APPROACH=15;let step=0;
+    unkInterval=setInterval(()=>{
+      step++;
+      const t=step/APPROACH;
+      const lat=UNK_START[0]+(PIN[0]-UNK_START[0])*t;
+      const lng=UNK_START[1]+(PIN[1]-UNK_START[1])*t;
+      const distRem=Math.round(haversine([lat,lng],PIN));
+      unkMarker.setLatLng([lat,lng]);
+      if(unkCircle)map.removeLayer(unkCircle);
+      unkCircle=L.circle([lat,lng],{radius:20,color:'#e03c3c',fillColor:'#e03c3c',fillOpacity:0.09,weight:1,dashArray:'3 4'}).addTo(map);
+      document.getElementById('tDist').textContent=`${distRem} m`;
+      document.getElementById('tBearing').textContent='220° SW';
+      document.getElementById('unkDist').textContent=`${distRem} m away`;
+      document.getElementById('unkClosing').textContent=`${Math.round(distRem/(APPROACH-step+1)+1)} m/s`;
+      document.getElementById('unkFreq').textContent=`${(ri(2400,5800)/1000).toFixed(1)} GHz`;
+      document.getElementById('unkPower').textContent=`${ri(8,28)} dBm`;
+      if(step<APPROACH)map.panTo([(lat+PIN[0])/2,(lng+PIN[1])/2],{animate:true,duration:0.8});
+
+      if(step>=APPROACH){
+        clearInterval(unkInterval);unkInterval=null;
+        map.flyTo(PIN,17,{animate:true,duration:1.2});
+        unkMarker.setLatLng(PIN);
+        document.getElementById('tDist').textContent='0 m — OVERLAP';
+        document.getElementById('tStatus').textContent='OVERLAPPING';
+        document.getElementById('unkDist').textContent='0 m — ON TARGET';
+        document.getElementById('unkClosing').textContent='0 m/s';
+        tlSet(5,'alert','PROXIMITY BREACH');
+        log('ALERT: Unknown signal reached target position!','err');
+        const fl=document.getElementById('lockFlash');
+        fl.style.background='rgba(224,60,60,0.1)';
+        fl.classList.remove('flash');void fl.offsetWidth;fl.classList.add('flash');
+
+        // Signal disappears after 5s
+        setTimeout(()=>{
+          if(unkMarker){map.removeLayer(unkMarker);unkMarker=null;}
+          if(unkCircle){map.removeLayer(unkCircle);unkCircle=null;}
+          document.getElementById('unkChip').classList.remove('show');
+          document.getElementById('threatBox').classList.remove('show');
+          document.getElementById('tStatus').textContent='Approaching';
+          tlSet(5,'done','Signal lost');
+          log('Unknown signal lost — no longer detectable.','warn');
+          document.getElementById('wfLine').setAttribute('stroke','#2f7fff');
+          document.getElementById('lockFlash').style.background='rgba(47,127,255,0.06)';
+          rfInterval=setInterval(rfTick,1200);
+          map.flyTo(PIN,15,{animate:true,duration:1.5});
+        },5000);
+      }
+    },1000);
+  },6000);
+}
+
+function stopMonitor(){
+  if(rfInterval){clearInterval(rfInterval);rfInterval=null;}
+  if(unkInterval){clearInterval(unkInterval);unkInterval=null;}
+  document.getElementById('btnStart').disabled=false;
+  document.getElementById('btnStop').style.display='none';
+  ['mapChip','accChip','unkChip'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  document.getElementById('threatBox').classList.remove('show');
+  document.getElementById('alertStamp').classList.remove('show');
+  if(myMarker){map.removeLayer(myMarker);myMarker=null;}
+  if(myCircle){map.removeLayer(myCircle);myCircle=null;}
+  if(unkMarker){map.removeLayer(unkMarker);unkMarker=null;}
+  if(unkCircle){map.removeLayer(unkCircle);unkCircle=null;}
+  tlReset();log('Session ended.','warn');setStat('dot-amber','Resetting...');
+  showZC('Session terminated — resetting...');
+  map.flyTo([22.5,80.9],5,{animate:true,duration:2.5,easeLinearity:0.15});
+  setTimeout(()=>{hideZC();map.dragging.disable();map.scrollWheelZoom.disable();setStat('dot-green','Idle');log('Ready.','info');},2700);
+}
+</script>
+</body>
+</html>
