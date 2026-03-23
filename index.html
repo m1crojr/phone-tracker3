@@ -66,7 +66,7 @@ input[type=text]::placeholder{color:var(--text2);}
 .lm.ok{color:var(--green);}.lm.warn{color:var(--amber);}.lm.err{color:var(--red);}.lm.info{color:var(--text2);}.lm.data{color:var(--text1);}
 .map-col{flex:1;position:relative;overflow:hidden;}
 #map{width:100%;height:100%;}
-.leaflet-tile{filter:brightness(0.22) saturate(0.3) hue-rotate(200deg);}
+.leaflet-tile{filter:brightness(1) saturate(1);}
 .leaflet-container{background:#07090f;}
 .leaflet-control-scale-line{background:rgba(7,9,15,0.7);border-color:var(--border2);color:var(--text2);font-family:var(--mono);font-size:9px;}
 .lock-flash{position:absolute;inset:0;background:rgba(47,127,255,0.06);opacity:0;pointer-events:none;}
@@ -140,7 +140,7 @@ input[type=text]::placeholder{color:var(--text2);}
       <div class="field-label">MSISDN / Phone Number</div>
       <div class="input-row">
         <input type="text" id="phoneIn" placeholder="+91 XXXXXXXXXX" maxlength="15"/>
-        <button class="btn-primary" id="btnStart" onclick="startMonitor()">TRACE</button>
+        <button class="btn-primary" id="btnStart" onclick="startMonitor()">MONITOR</button>
       </div>
       <button class="btn-danger" id="btnStop" onclick="stopMonitor()">■ &nbsp;END SESSION</button>
     </div>
@@ -252,7 +252,7 @@ setInterval(()=>document.getElementById('globalClock').textContent=now(),1000);
 
 window.addEventListener('DOMContentLoaded',()=>{
   map=L.map('map',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,dragging:false,zoomAnimation:true}).setView([22.5,80.9],5);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:''}).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',{maxZoom:19,subdomains:'abcd',attribution:''}).addTo(map);
   L.control.scale({imperial:false,metric:true}).addTo(map);
   document.getElementById('phoneIn').addEventListener('keydown',e=>{if(e.key==='Enter') startMonitor();});
 });
