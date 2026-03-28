@@ -44,6 +44,10 @@ input[type=text]::placeholder{color:var(--text2);}
 .btn-primary:disabled{background:var(--bg3);color:var(--text2);cursor:not-allowed;box-shadow:none;}
 .btn-danger{width:100%;background:transparent;border:1px solid var(--border2);color:var(--text1);border-radius:3px;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;padding:7px;cursor:pointer;display:none;margin-top:6px;transition:all 0.15s;}
 .btn-danger:hover{border-color:var(--red);color:var(--red);}
+.btn-physver{width:100%;background:transparent;border:1px solid rgba(232,160,32,0.35);color:var(--amber);border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:0.13em;padding:7px 10px;cursor:pointer;margin-top:8px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.btn-physver:hover{border-color:var(--amber);background:rgba(232,160,32,0.07);box-shadow:0 0 12px rgba(232,160,32,0.15);}
+.btn-physver .pv-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);box-shadow:0 0 5px var(--amber);flex-shrink:0;}
+.btn-physver .pv-beta{font-size:7px;color:rgba(232,160,32,0.6);letter-spacing:0.2em;margin-left:2px;}
 .kv{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(30,39,64,0.6);gap:8px;}
 .kv:last-child{border-bottom:none;}
 .kv-k{font-size:10px;color:var(--text2);letter-spacing:0.06em;white-space:nowrap;flex-shrink:0;}
@@ -143,6 +147,11 @@ input[type=text]::placeholder{color:var(--text2);}
         <button class="btn-primary" id="btnStart" onclick="startMonitor()">TRACE</button>
       </div>
       <button class="btn-danger" id="btnStop" onclick="stopMonitor()">■ &nbsp;END SESSION</button>
+      <button class="btn-physver" id="btnPhysVer" onclick="togglePhysVer()">
+        <div class="pv-dot"></div>
+        PHYSICAL VERIFICATION
+        <span class="pv-beta">BETA</span>
+      </button>
     </div>
     <div class="sb-section">
       <div class="sb-head">Signal Intelligence</div>
@@ -279,6 +288,23 @@ function rfTick(){
   updateBars(sig);
 }
 
+let physVerActive=false;
+function togglePhysVer(){
+  physVerActive=!physVerActive;
+  const btn=document.getElementById('btnPhysVer');
+  if(physVerActive){
+    btn.style.background='rgba(232,160,32,0.12)';
+    btn.style.borderColor='var(--amber)';
+    btn.style.boxShadow='0 0 16px rgba(232,160,32,0.2)';
+    log('Physical Verification module enabled (BETA).','warn');
+  } else {
+    btn.style.background='transparent';
+    btn.style.borderColor='rgba(232,160,32,0.35)';
+    btn.style.boxShadow='none';
+    log('Physical Verification module disabled.','info');
+  }
+}
+
 function startMonitor(){
   const phone=document.getElementById('phoneIn').value.trim();
   if(!phone){log('ERROR: No MSISDN provided.','err');return;}
@@ -320,7 +346,6 @@ function startMonitor(){
     rfInterval=setInterval(rfTick,1200);
   },3800);
 
-  // Unknown signal appears after 6s
   setTimeout(()=>{
     clearInterval(rfInterval);rfInterval=null;
     tlSet(3,'done','Signal detected');tlSet(4,'active','Tracking vector...');
@@ -332,7 +357,6 @@ function startMonitor(){
     document.getElementById('tProto').textContent=proto;
     document.getElementById('tStatus').textContent='Approaching';
 
-    // Spike waveform red
     for(let i=0;i<8;i++){wfPts.push(ri(2,10));if(wfPts.length>40)wfPts.shift();}
     document.getElementById('wfLine').setAttribute('points',wfPts.map((p,i)=>`${i*5},${p}`).join(' '));
     document.getElementById('wfLine').setAttribute('stroke','#e03c3c');
@@ -381,7 +405,6 @@ function startMonitor(){
         fl.style.background='rgba(224,60,60,0.1)';
         fl.classList.remove('flash');void fl.offsetWidth;fl.classList.add('flash');
 
-        // Signal disappears after 5s
         setTimeout(()=>{
           if(unkMarker){map.removeLayer(unkMarker);unkMarker=null;}
           if(unkCircle){map.removeLayer(unkCircle);unkCircle=null;}
