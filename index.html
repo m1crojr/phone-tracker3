@@ -379,7 +379,7 @@ function startMonitor(){
       let t = step / APPROACH;
 
 // ease-out (slows near target)
-t = 1 - Math.pow(1 - t, 2);
+t = t * (2 - t);
       const lat=UNK_START[0]+(PIN[0]-UNK_START[0])*t;
       const lng=UNK_START[1]+(PIN[1]-UNK_START[1])*t;
       const distRem=Math.round(haversine([lat,lng],PIN));
