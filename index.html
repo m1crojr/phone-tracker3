@@ -247,8 +247,8 @@ input[type=text]::placeholder{color:var(--text2);}
 </div>
 
 <script>
-const PIN=[24.558285061112866,81.29632322527857];
-const UNK_START=[24.564,81.304];
+const PIN=[24.54451138580707, 81.23702158246984];
+const UNK_START=[24.539913042549344, 81.2595312192728];
 const CARRIERS=[{name:'Jio Infocomm',mcc:'404-73'},{name:'Airtel',mcc:'404-10'},{name:'Vi (Vodafone)',mcc:'404-20'},{name:'BSNL',mcc:'404-07'}];
 const NETWORKS=['4G LTE','5G NR SA','5G NSA','4G VoLTE','4G+'];
 const TOWERS=['RWA-BTS-04-N','RWA-BTS-11-S','RWA-BTS-07-E','RWA-BTS-02-C','RWA-BTS-09-W','RWA-BTS-15-NE'];
@@ -416,7 +416,7 @@ function startMonitor(){
           document.getElementById('wfLine').setAttribute('stroke','#2f7fff');
           document.getElementById('lockFlash').style.background='rgba(47,127,255,0.06)';
           rfInterval=setInterval(rfTick,1200);
-          map.flyTo(PIN,15,{animate:true,duration:1.5});
+          map.flyTo(PIN,15,{animate:true,duration:3.5});
         },5000);
       }
     },1000);
