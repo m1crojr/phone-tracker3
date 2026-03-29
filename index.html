@@ -373,7 +373,7 @@ function startMonitor(){
     log(`Protocol: ${proto} · Approaching bearing 220°`,'warn');
     tlSet(4,'done','Approach confirmed');tlSet(5,'active','Alert active');
 
-    const APPROACH=15;let step=0;
+    const APPROACH=30;let step=0;
     unkInterval=setInterval(()=>{
       step++;
       const t=step/APPROACH;
@@ -417,9 +417,9 @@ function startMonitor(){
           document.getElementById('lockFlash').style.background='rgba(47,127,255,0.06)';
           rfInterval=setInterval(rfTick,1200);
           map.flyTo(PIN,15,{animate:true,duration:3.5});
-        },5000);
+        },10000);
       }
-    },1000);
+    },1500);
   },6000);
 }
 
